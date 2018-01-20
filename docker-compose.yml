@@ -1,0 +1,77 @@
+version: '3.1'
+
+services:
+  master:
+    image: mysql:5.5
+    environment:
+      MYSQL_ROOT_PASSWORD: master
+    volumes:
+      - ./config/master:/etc/mysql/conf.d
+    ports:
+      - 3307:3306
+    networks: 
+      mysql_repl:
+        aliases: 
+          - master
+        ipv4_address: 172.19.0.2
+  
+  slave1:
+    image: mysql:5.5
+    environment:
+      MYSQL_ROOT_PASSWORD: slave1
+    volumes:
+      - ./config/slave1:/etc/mysql/conf.d
+    ports:
+      - 3308:3306
+    networks: 
+      mysql_repl:
+        ipv4_address: 172.19.0.3
+    depends_on:
+      - master
+  
+  slave2:
+    image: mysql:5.5
+    environment:
+      MYSQL_ROOT_PASSWORD: slave2
+    volumes:
+      - ./config/slave2:/etc/mysql/conf.d
+    ports:
+      - 3309:3306
+    networks: 
+      mysql_repl:
+        ipv4_address: 172.19.0.4
+    depends_on:
+      - slave1
+
+  slave3:
+    image: mysql:5.5
+    environment:
+      MYSQL_ROOT_PASSWORD: slave3
+    volumes:
+      - ./config/slave3:/etc/mysql/conf.d
+    ports:
+      - 3310:3306
+    networks: 
+      mysql_repl:
+        ipv4_address: 172.19.0.5
+    depends_on:
+      - slave2
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks: 
+      mysql_repl:
+        ipv4_address: 172.19.0.6  
+    depends_on:
+      - slave3
+
+networks:
+  mysql_repl:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.19.0.0/24

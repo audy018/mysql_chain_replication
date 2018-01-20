@@ -1,0 +1,18 @@
+[client]
+port        = 3306
+
+[mysqld]
+port        = 3306
+
+log_error = /var/log/mysql/error.log
+
+# The following can be used as easy to replay backup logs or for replication.
+# note: if you are setting up a replication slave, see README.Debian about
+#       other settings you may need to change.
+server-id           = 4
+log_bin
+log-slave-updates   = true
+expire_logs_days    = 10
+max_binlog_size     = 100M
+#binlog_do_db       = include_database_name
+#binlog_ignore_db   = include_database_name
